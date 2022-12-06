@@ -8,17 +8,18 @@ const {API_URL, TELEGRAM_BOT_TOKEN} = process.env;
 const bot = new TeleBot(TELEGRAM_BOT_TOKEN);
 const getFileName = (name = 'sticker.tgs') => basename(name, extname(name)) + '.tgs';
 
-bot.on('text', msg => msg.reply.text(`Send me SVG file`))
+bot.on('text', msg => msg.reply.text(`Send me the SVG file`))
 bot.on('document', async msg => {
     let {document: {mime_type, file_name, file_id}} = msg;
     if (!mime_type && file_name) mime_type = lookup(file_name);
     if (mime_type !== 'image/svg+xml')
         return msg.reply.text(`Only SVG files are supported, your file has an unsupported MIME: ${mime_type}`, {asReply: true});
+    msg.reply.action('upload_document');
     const {fileLink} = await bot.getFile(file_id);
     const sticker = await convert(fileLink);
     const fileName = getFileName(file_name);
     const {message_id: replyToMessage} = await msg.reply.file(sticker, {fileName, asReply: true})
-    return msg.reply.text('Now you can forward this sticker to @Stickers bot', {replyToMessage})
+    return msg.reply.text('You can now forward this sticker to the @Stickers bot', {replyToMessage})
 })
 
 function convert(url) {
