@@ -7,8 +7,9 @@ import https from "https";
 const {API_URL, TELEGRAM_BOT_TOKEN} = process.env;
 const bot = new TeleBot(TELEGRAM_BOT_TOKEN);
 const getFileName = (name = 'sticker.tgs') => basename(name, extname(name)) + '.tgs';
+const types = ['text', 'sticker', 'photo', 'audio', 'voice', 'video', 'videoNote', 'animation', 'contact', 'location', 'venue', 'game', 'passportData'];
 
-bot.on('text', msg => msg.reply.text(`Send me the SVG file`))
+bot.on(types, msg => msg.reply.text(`Send me the SVG file`))
 bot.on('document', async msg => {
     let {document: {mime_type, file_name, file_id}} = msg;
     if (!mime_type && file_name) mime_type = lookup(file_name);
